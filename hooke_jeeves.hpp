@@ -12,7 +12,7 @@ using FunctionND = std::function<double(const Vector&)>; // f(x1, ..., xn) -> R
 using Function1D = std::function<double(double)>;        // f(x) -> R
 
 // Golden section search
-inline double golden_section_search(Function1D f, double a, double b, double tolerance) {
+inline double golden_section_search(Function1D f, double a, double b, double eps) {
     //.......
     return 0.0;
 }

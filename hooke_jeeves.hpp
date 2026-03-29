@@ -76,39 +76,26 @@ inline Vector hooke_jeeves(FunctionND f, Vector x, double eps, bool verbose = fa
     //============================================ Main Stage ============================================
     while (true) {
         x = y;
-        if (verbose) {
-            std::cout << "iteration " << iter << std::endl;
-            std::cout << "x_" << iter << " = " << y << std::endl;
-        }
         //====================== Step 1 ======================
         for (size_t j = 0; j < n; j++) {
-            tau = golden_section_search([&](double t) { return f(y + t * D[j]); }, -0.1, 0.1, eps);
-            y = y + tau * D[j];
-
-            if (verbose)
-                std::cout << " y_" << j+1 << " = " << y << std::endl;
+            tau = golden_section_search([&](double t) { return f(y + t * D[j]); }, -0.1, 0.1, eps); // оптимизация по координатным осям
+            y = y + tau * D[j]; // оптимальные перемещения по координатным осям
         }
-        new_x = y;
+        new_x = y; // y_(n+1)
         // euclide norm
-        double residual = norm(new_x - x, 2);
+        double residual = norm(new_x - x, 2); // residual
 
-        if (verbose) {
-            std::cout << "residual" << " = " << residual << std::endl << std::endl;
-        }
-
-        if (residual <= eps) {
+        if (residual <= eps) { // условие выхода
             x = new_x;
             break;
         }
         //====================== Step 2 ======================
-        d = new_x - x;
-        x = new_x;
-        tau = golden_section_search([&](double t) { return f(x + t * d); }, 0, 3, eps);
-        y = x + tau * d;
-        iter++;
+        d = new_x - x; // x_(k+1) - x_k направление образца
+        x = new_x; // x_(k+1)
+        tau = golden_section_search([&](double t) { return f(x + t * d); }, 0, 3, eps); // оптимизация по направлению образца
+        y = x + tau * d; // новое y_1
+        iter++; // k = k + 1
     }
-    if (verbose)
-        std::cout << "x_min = " << x << std::endl;
     return x;
 }
 

@@ -1,6 +1,4 @@
-#ifndef HOOKE_JEEVES_HPP
-#define HOOKE_JEEVES_HPP
-
+#pragma once
 #include "my_math/vector.hpp"
 #include <functional>
 #include <iostream>
@@ -102,4 +100,3 @@ inline Vector hooke_jeeves(FunctionND f, Vector x, double eps, bool verbose = fa
 }
 
 } // namespace Opt
-#endif

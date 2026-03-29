@@ -13,11 +13,11 @@ using Function1D = std::function<double(double)>;        // f(x) -> R
 
 // Golden section search
 inline double golden_section_search(Function1D f, double a, double b, double eps) {
-const double alpha = (std::sqrt(5.0) - 1.0) / 2.0;
-    const double beta = 1.0 - alpha; 
+    const double alpha = (std::sqrt(5.0) - 1.0) / 2.0;
+    const double beta = 1.0 - alpha;
     double l = a + beta * (b - a);
     double m = a + alpha * (b - a);
-    
+
     double fl = f(l);
     double fm = f(m);
 
@@ -25,15 +25,15 @@ const double alpha = (std::sqrt(5.0) - 1.0) / 2.0;
         if (fl > fm) {
             a = l;
             l = m;
-            fl = fm; 
+            fl = fm;
             m = a + alpha * (b - a);
-            fm = f(m); 
+            fm = f(m);
         } else {
             b = m;
             m = l;
-            fm = fl; 
+            fm = fl;
             l = a + beta * (b - a);
-            fl = f(l); 
+            fl = f(l);
         }
     }
     return (a + b) / 2.0;
@@ -50,7 +50,7 @@ inline Vectors create_d(size_t n) {
     return D;
 }
 
-inline Vector hooke_jeeves(FunctionND f, Vector x, double eps) {
+inline Vector hooke_jeeves(FunctionND f, Vector x, double eps, bool verbose = false) {
     //============================================ Initial Stage ============================================
     size_t n = x.size();
     Vectors D = create_d(n); // e_j
@@ -64,15 +64,26 @@ inline Vector hooke_jeeves(FunctionND f, Vector x, double eps) {
 
     //============================================ Main Stage ============================================
     while (true) {
+        x = y;
+        if (verbose) {
+            std::cout << "iteration " << iter << std::endl;
+            std::cout << "x_" << iter << " = " << y << std::endl;
+        }
         //====================== Step 1 ======================
         for (size_t j = 0; j < n; j++) {
-            tau = golden_section_search([&](double t) { return f(y + t * D[j]); }, -10, 10, eps);
+            tau = golden_section_search([&](double t) { return f(y + t * D[j]); }, -0.1, 0.1, eps);
             y = y + tau * D[j];
+
+            if (verbose)
+                std::cout << " y_" << j+1 << " = " << y << std::endl;
         }
         new_x = y;
         // euclide norm
         double residual = norm(new_x - x, 2);
-        std::cout << iter << ' ' << residual << std::endl;
+
+        if (verbose) {
+            std::cout << "residual" << " = " << residual << std::endl << std::endl;
+        }
 
         if (residual <= eps) {
             x = new_x;
@@ -81,11 +92,12 @@ inline Vector hooke_jeeves(FunctionND f, Vector x, double eps) {
         //====================== Step 2 ======================
         d = new_x - x;
         x = new_x;
-        tau = golden_section_search([&](double t) { return f(x + t * d); }, -10, 10, eps);
+        tau = golden_section_search([&](double t) { return f(x + t * d); }, 0, 3, eps);
         y = x + tau * d;
         iter++;
     }
-    std::cout << y << std::endl;
+    if (verbose)
+        std::cout << "x_min = " << x << std::endl;
     return x;
 }
 

@@ -13,8 +13,30 @@ using Function1D = std::function<double(double)>;        // f(x) -> R
 
 // Golden section search
 inline double golden_section_search(Function1D f, double a, double b, double eps) {
-    //.......
-    return 0.0;
+const double alpha = (std::sqrt(5.0) - 1.0) / 2.0;
+    const double beta = 1.0 - alpha; 
+    double l = a + beta * (b - a);
+    double m = a + alpha * (b - a);
+    
+    double fl = f(l);
+    double fm = f(m);
+
+    while ((b - a) > eps) {
+        if (fl > fm) {
+            a = l;
+            l = m;
+            fl = fm; 
+            m = a + alpha * (b - a);
+            fm = f(m); 
+        } else {
+            b = m;
+            m = l;
+            fm = fl; 
+            l = a + beta * (b - a);
+            fl = f(l); 
+        }
+    }
+    return (a + b) / 2.0;
 }
 
 // Create basis vectors
